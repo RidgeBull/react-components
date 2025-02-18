@@ -1,0 +1,15 @@
+{
+  "name": "react-components",
+  "version": "1.0.0",
+  "description": "開発用の、社内 React Component集",
+  "main": "./bin/react-components.js",
+  "bin": {
+    "react-components": "./bin/react-components.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
