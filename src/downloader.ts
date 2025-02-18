@@ -1,30 +1,59 @@
-import fs from "fs"
-import path from "path"
-import chalk from "chalk"
-import { Config } from "./config"
+import fs from "fs";
+import path from "path";
+import chalk from "chalk";
+import { Config } from "./config";
 
-const TEMPLATE_DIR = path.join(__dirname, "..", "..", "templates")
+const TEMPLATE_DIR = path.join(__dirname, "..", "..", "templates");
 
-export async function downloadComponent(componentName: string, config: Config, cwd: string) {
-  const componentsDir = path.join(cwd, config.componentsDir)
-  const fileExtension = config.typescript ? ".tsx" : ".jsx"
-  const sourcePath = path.join(TEMPLATE_DIR, `${componentName}${fileExtension}`)
-  const destinationPath = path.join(componentsDir, `${componentName}${fileExtension}`)
-
-  if (!fs.existsSync(TEMPLATE_DIR)) {
-    console.error(chalk.red(`❌ テンプレートディレクトリが見つかりません: ${TEMPLATE_DIR}`))
-    process.exit(1)
-  }
+export async function downloadComponent(
+  componentName: string,
+  config: Config,
+  cwd: string
+) {
+  const componentsDir = path.join(cwd, config.componentsDir);
+  const sourcePath = path.join(TEMPLATE_DIR, componentName);
+  console.log(TEMPLATE_DIR);
+  const destinationPath = path.join(componentsDir, componentName);
 
   if (!fs.existsSync(sourcePath)) {
-    console.error(chalk.red(`❌ コンポーネント "${componentName}" が見つかりませんでした。`))
-    process.exit(1)
+    console.error(
+      chalk.red(`❌ コンポーネント "${componentName}" が見つかりませんでした。`)
+    );
+    process.exit(1);
   }
 
   if (!fs.existsSync(componentsDir)) {
-    fs.mkdirSync(componentsDir, { recursive: true })
+    fs.mkdirSync(componentsDir, { recursive: true });
   }
 
-  fs.copyFileSync(sourcePath, destinationPath)
-  console.log(chalk.green(`✅ ${componentName} を ${config.componentsDir}/${componentName}${fileExtension} にコピーしました！`))
+  if (fs.existsSync(destinationPath)) {
+    console.log(
+      chalk.yellow(`⚠ ${componentName} はすでに存在します。上書きしますか？`)
+    );
+  }
+
+  copyFolderRecursiveSync(sourcePath, destinationPath);
+  console.log(
+    chalk.green(
+      `✅ ${componentName} を ${config.componentsDir}/${componentName} にコピーしました！`
+    )
+  );
+}
+
+function copyFolderRecursiveSync(source: string, target: string) {
+  if (!fs.existsSync(target)) {
+    fs.mkdirSync(target, { recursive: true });
+  }
+
+  const files = fs.readdirSync(source);
+  for (const file of files) {
+    const sourceFile = path.join(source, file);
+    const targetFile = path.join(target, file);
+
+    if (fs.lstatSync(sourceFile).isDirectory()) {
+      copyFolderRecursiveSync(sourceFile, targetFile);
+    } else {
+      fs.copyFileSync(sourceFile, targetFile);
+    }
+  }
 }
