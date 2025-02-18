@@ -1,0 +1,6 @@
+{
+  "componentsDir": "components",
+  "style": "tailwind",
+  "baseColor": "blue",
+  "typescript": true
+}
