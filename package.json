@@ -2,14 +2,22 @@
   "name": "react-components",
   "version": "1.0.0",
   "description": "開発用の、社内 React Component集",
-  "main": "./bin/react-components.js",
+  "main": "./dist/bin/react-components.js",
   "bin": {
-    "react-components": "./bin/react-components.js"
+    "react-components": "./dist/bin/react-components.js"
   },
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "commander": "^13.1.0"
+  }
 }
