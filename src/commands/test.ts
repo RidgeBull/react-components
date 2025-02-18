@@ -5,5 +5,5 @@ export const test = new Command()
   .name("test")
   .description("Check if the CLI is working")
   .action(() => {
-    console.log(chalk.green("✅ react-components CLI is working!"));
+    console.log(chalk.green("react-components CLI is working!"));
   });

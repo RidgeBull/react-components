@@ -7,29 +7,35 @@ exports.downloadComponent = downloadComponent;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const chalk_1 = __importDefault(require("chalk"));
+const prompts_1 = __importDefault(require("prompts"));
 const TEMPLATE_DIR = path_1.default.join(__dirname, "..", "..", "templates");
 async function downloadComponent(componentName, config, cwd) {
     const componentsDir = path_1.default.join(cwd, config.componentsDir);
-    const sourcePath = path_1.default.join(TEMPLATE_DIR, componentName); // 🔹 フォルダのパス
-    console.log(TEMPLATE_DIR);
-    console.log(componentName);
-    console.log(sourcePath);
-    const destinationPath = path_1.default.join(componentsDir, componentName); // 🔹 そのままフォルダごとコピー
+    const sourcePath = path_1.default.join(TEMPLATE_DIR, componentName);
+    const destinationPath = path_1.default.join(componentsDir, componentName);
     if (!fs_1.default.existsSync(sourcePath)) {
-        console.error(chalk_1.default.red(`❌ コンポーネント "${componentName}" が見つかりませんでした。`));
+        console.error(chalk_1.default.red(`コンポーネント "${componentName}" が見つかりませんでした。`));
         process.exit(1);
     }
     if (!fs_1.default.existsSync(componentsDir)) {
         fs_1.default.mkdirSync(componentsDir, { recursive: true });
     }
     if (fs_1.default.existsSync(destinationPath)) {
-        console.log(chalk_1.default.yellow(`⚠ ${componentName} はすでに存在します。上書きしますか？`));
-        // 必要ならプロンプトで上書き確認を追加
+        console.log(chalk_1.default.yellow(`${componentName} はすでに存在します。`));
+        const response = await (0, prompts_1.default)({
+            type: "confirm",
+            name: "overwrite",
+            message: "上書きしますか？",
+            initial: false,
+        });
+        if (!response.overwrite) {
+            console.log(chalk_1.default.blue(`${componentName} のダウンロードをキャンセルしました。`));
+            return;
+        }
     }
     copyFolderRecursiveSync(sourcePath, destinationPath);
-    console.log(chalk_1.default.green(`✅ ${componentName} を ${config.componentsDir}/${componentName} にコピーしました！`));
+    console.log(chalk_1.default.green(`${componentName} を ${config.componentsDir}/${componentName} にコピーしました！`));
 }
-// 🔹 フォルダ全体をコピーする関数
 function copyFolderRecursiveSync(source, target) {
     if (!fs_1.default.existsSync(target)) {
         fs_1.default.mkdirSync(target, { recursive: true });

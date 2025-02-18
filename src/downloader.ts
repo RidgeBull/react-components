@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import { Config } from "./config";
-
+import prompts from "prompts";
 const TEMPLATE_DIR = path.join(__dirname, "..", "..", "templates");
 
 export async function downloadComponent(
@@ -12,12 +12,11 @@ export async function downloadComponent(
 ) {
   const componentsDir = path.join(cwd, config.componentsDir);
   const sourcePath = path.join(TEMPLATE_DIR, componentName);
-  console.log(TEMPLATE_DIR);
   const destinationPath = path.join(componentsDir, componentName);
 
   if (!fs.existsSync(sourcePath)) {
     console.error(
-      chalk.red(`❌ コンポーネント "${componentName}" が見つかりませんでした。`)
+      chalk.red(`コンポーネント "${componentName}" が見つかりませんでした。`)
     );
     process.exit(1);
   }
@@ -27,15 +26,25 @@ export async function downloadComponent(
   }
 
   if (fs.existsSync(destinationPath)) {
-    console.log(
-      chalk.yellow(`⚠ ${componentName} はすでに存在します。上書きしますか？`)
-    );
+    console.log(chalk.yellow(`${componentName} はすでに存在します。`));
+
+    const response = await prompts({
+      type: "confirm",
+      name: "overwrite",
+      message: "上書きしますか？",
+      initial: false,
+    });
+
+    if (!response.overwrite) {
+      console.log(chalk.blue(`${componentName} のダウンロードをキャンセルしました。`));
+      return;
+    }
   }
 
   copyFolderRecursiveSync(sourcePath, destinationPath);
   console.log(
     chalk.green(
-      `✅ ${componentName} を ${config.componentsDir}/${componentName} にコピーしました！`
+      `${componentName} を ${config.componentsDir}/${componentName} にコピーしました！`
     )
   );
 }

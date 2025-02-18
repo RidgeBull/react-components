@@ -12,19 +12,19 @@ const fs_1 = require("fs");
 const config_1 = require("../config");
 exports.add = new commander_1.Command()
     .name("add")
-    .description("Add a React component to your project")
-    .argument("<component>", "The name of the component to add")
+    .description("Reactコンポーネントをプロジェクトに追加します")
+    .argument("<component>", "追加するコンポーネントの名前を指定してください")
     .action(async (component) => {
     const cwd = process.cwd();
     // 設定ファイルがあるか確認
     if (!(0, fs_1.existsSync)(path_1.default.join(cwd, "react-components.json"))) {
-        console.error(chalk_1.default.red("⚠ 設定ファイル (react-components.json) が見つかりません。"));
+        console.error(chalk_1.default.red("設定ファイル (react-components.json) が見つかりません。"));
         process.exit(1);
     }
     // 設定を読み込む
     const config = (0, config_1.getConfig)(cwd);
     if (!config) {
-        console.error(chalk_1.default.red("⚠ 設定ファイルの読み込みに失敗しました。"));
+        console.error(chalk_1.default.red("設定ファイルの読み込みに失敗しました。"));
         process.exit(1);
     }
     // コンポーネントをダウンロード
